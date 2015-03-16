@@ -274,6 +274,9 @@ function launchParticlesJS(tag_id, params){
     }
 
     /* opacity */
+    if(opacity == "rand")
+      opacity = Math.random();
+
     this.opacity = opacity;
     if(pJS.particles.opacity.anim.enable){
       this.opacity_status = false;
@@ -284,8 +287,8 @@ function launchParticlesJS(tag_id, params){
     }
 
     /* animation - velocity for speed */
-    this.vx = -.5 + Math.random();
-    this.vy = -.5 + Math.random();
+    this.vx = -5 + Math.random()*10;
+    this.vy = -5 + Math.random()*10;
 
   };
 
@@ -327,8 +330,48 @@ function launchParticlesJS(tag_id, params){
       var p = pJS.particles.array[i];
 
       /* move the particle */
+
+      var radiusMax = 10;
+
+      if(p.vx > radiusMax) p.vx = radiusMax;
+      if(p.vx < -radiusMax) p.vx = -radiusMax;
+      if(p.vy > radiusMax) p.vy = radiusMax;
+      if(p.vy < -radiusMax) p.vy = -radiusMax;
+
+      var radiusMin = 1;
+/*
+      if(p.vx < radiusMin && p.vx > -radiusMin){
+        if(p.vx > 0) p.vx = radiusMin;
+        else p.vx = -radiusMin;
+      }
+       if(p.vy < radiusMin && p.vy > -radiusMin){
+        if(p.vy > 0) p.vy = radiusMin;
+        else p.vy = -radiusMin;
+      }*/
+
       p.x += p.vx * (pJS.particles.anim.speed/2);
       p.y += p.vy * (pJS.particles.anim.speed/2);
+
+      /* slow down*/
+     /* if(p.vx < 0) p.vx += .002;
+      if(p.vy < 0) p.vy += .002;
+      p.vx -= .001;
+      p.vy -= .001;*/
+      
+      // if(p.radius > 40){
+      //   var pos ={
+      //     pos_x: p.x,
+      //     pos_y: p.y
+      //   };
+      //   p.vx = 0;
+      //   p.vy = 0;
+      //   pJS.fn.vendors.interactivity.pushParticles(2, pos);
+      // }
+      //
+      //if(i < 100){
+        //p.color = "#f0ff";
+     // }
+      p.radius = (Math.abs(p.vx) + Math.abs(p.vy))/2;
 
       /* change opacity status */
       if(pJS.particles.opacity.anim.enable) {
@@ -340,14 +383,37 @@ function launchParticlesJS(tag_id, params){
           p.opacity -= p.vo;
         }
       }
+      /* Mouse repulsor */
+      //if(pJS.interactivity.status == 'mousemove'){
+        var dx_mouse = p.x - pJS.interactivity.mouse.pos_x,
+          dy_mouse = p.y - pJS.interactivity.mouse.pos_y,
+          dist_mouse = Math.sqrt(dx_mouse*dx_mouse + dy_mouse*dy_mouse);
+
+        if(dist_mouse < 250){
+
+           var dx_mouse_add = p.x+p.vx - pJS.interactivity.mouse.pos_x,
+              dy_mouse_add = p.y+p.vy - pJS.interactivity.mouse.pos_y,
+              dist_mouse_add = Math.sqrt(dx_mouse_add*dx_mouse_add + dy_mouse_add*dy_mouse_add);
+
+          //if(dist_mouse > dist_mouse_add){
+            var ax, ay;
+
+            ax = dx_mouse/200000;
+            ay = dy_mouse/200000;
+            p.vx -= ax*p.radius*dist_mouse*.5;
+            p.vy -= ay*p.radius*dist_mouse*.5;
+          //}
+        }
+      //}
+
 
       /* change particle position if it is out of canvas */
       switch(pJS.interactivity.events.onresize.mode){
         case 'bounce':
-          if (p.x - p.radius > pJS.canvas.w) p.vx = -p.vx;
-          else if (p.x + p.radius < 0) p.vx = -p.vx;
-          if (p.y - p.radius > pJS.canvas.h) p.vy = -p.vy;
-          else if (p.y + p.radius < 0) p.vy = -p.vy;
+          if (p.x + p.radius > pJS.canvas.w) p.vx = -p.vx;
+          else if (p.x - p.radius < 0) p.vx = -p.vx;
+          if (p.y + p.radius > pJS.canvas.h) p.vy = -p.vy;
+          else if (p.y - p.radius < 0) p.vy = -p.vy;
         break;
 
         case 'out':
@@ -417,24 +483,30 @@ function launchParticlesJS(tag_id, params){
     if(dist <= pJS.particles.line_linked.distance) {
 
       /* draw the line */
-      var color_line = pJS.particles.line_linked.color_rgb_line;
-      pJS.canvas.ctx.beginPath();
-      pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+ (pJS.particles.line_linked.opacity-dist/pJS.particles.line_linked.distance) +')';
-      pJS.canvas.ctx.moveTo(p1.x, p1.y);
-      pJS.canvas.ctx.lineTo(p2.x, p2.y);
-      pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
-      pJS.canvas.ctx.stroke();
-      pJS.canvas.ctx.closePath();
 
+      /*if(dist <= pJS.particles.line_linked.distance*0.25) {
+        var color_line = pJS.particles.line_linked.color_rgb_line;
+        pJS.canvas.ctx.beginPath();
+        pJS.canvas.ctx.strokeStyle = 'rgba('+color_line.r+','+color_line.g+','+color_line.b+','+ (pJS.particles.line_linked.opacity-dist/pJS.particles.line_linked.distance) +')';
+        pJS.canvas.ctx.moveTo(p1.x, p1.y);
+        pJS.canvas.ctx.lineTo(p2.x, p2.y);
+        pJS.canvas.ctx.lineWidth = pJS.particles.line_linked.width;
+        pJS.canvas.ctx.stroke();
+        pJS.canvas.ctx.closePath();
+      }*/
       /* condensed particles */
-      if(pJS.particles.line_linked.condensed_mode.enable){
-        var dx = p1.x - p2.x,
-            dy = p1.y - p2.y,
-            ax = dx/(pJS.particles.line_linked.condensed_mode.rotateX*1000),
-            ay = dy/(pJS.particles.line_linked.condensed_mode.rotateY*1000);
-        p2.vx += ax;
-        p2.vy += ay;
-      }
+        /*var dx = p1.x - p2.x,
+            dy = p1.y - p2.y;*/
+        var ax, ay;
+
+        ax = dx/200000;
+        ay = dy/200000;
+
+        p1.vx += ax*10/(p1.radius+p2.radius);
+        p1.vy += ay*10/(p1.radius+p2.radius);
+
+        p2.vx -= ax*10/(p1.radius+p2.radius);
+        p2.vy -= ay*10/(p1.radius+p2.radius);
 
     }
 

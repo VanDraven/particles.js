@@ -11,27 +11,27 @@ particlesJS('particles-js', {
     color_random: false,
     shape: 'circle', // "circle", "edge" or "triangle"
     opacity: {
-      opacity: 1,
+      opacity: "rand",
       anim: {
-        enable: true,
-        speed: 1.5,
+        enable: false,
+        speed: 10,
         opacity_min: 0,
-        sync: false
+        sync: true
       }
     },
-    size: 4,
+    size: 5,
     size_random: true,
-    nb: 150,
+    nb: 500,
     line_linked: {
       enable_auto: true,
-      distance: 100,
-      color: '#fff',
-      opacity: 1,
-      width: 1,
+      distance: 250,
+      color: '#A00',
+      opacity: 0,
+      width: 0,
       condensed_mode: {
-        enable: false,
-        rotateX: 600,
-        rotateY: 600
+        enable: true,
+        rotateX: 100,
+        rotateY: 100
       }
     },
     anim: {
@@ -42,10 +42,10 @@ particlesJS('particles-js', {
   interactivity: {
     enable: true,
     mouse: {
-      distance: 300
+      distance: 500
     },
     detect_on: 'canvas', // "canvas" or "window"
-    mode: 'grab', // "grab" or false
+    mode: false, // "grab" or false
     line_linked: {
       opacity: .5
     },
@@ -53,11 +53,11 @@ particlesJS('particles-js', {
       onclick: {
         enable: true,
         mode: 'push', // "push" or "remove"
-        nb: 4
+        nb: 10
       },
       onresize: {
         enable: true,
-        mode: 'out', // "out" or "bounce"
+        mode: 'bounce', // "out" or "bounce"
         density_auto: false,
         density_area: 800 // nb_particles = particles.nb * (canvas width *  canvas height / 1000) / density_area
       }
